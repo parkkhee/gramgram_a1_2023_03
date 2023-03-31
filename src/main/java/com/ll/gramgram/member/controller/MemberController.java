@@ -1,11 +1,13 @@
 package com.ll.gramgram.member.controller;
 
+import com.ll.gramgram.member.service.MemberService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
+    private final MemberService memberService;
 
     @GetMapping("/join")
     public String showJoin() {
@@ -35,7 +38,19 @@ public class MemberController {
 
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
+        memberService.join(joinForm.getUsername(), joinForm.getPassword());
         return "redirect:/";
+    }
+
+    @GetMapping("/login")
+    public String showLogin() {
+        return "usr/member/login";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me")
+    public String showMe() {
+        return "usr/member/me";
     }
 
 }
